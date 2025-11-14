@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width-device-width, initial-scale-1"  />
+        <title>Sistema Admin - Tema Mare</title>
+        <style>
+            :root{
+                --sea-1:#0e7490; /* teal */
+                --sea-2:#06b6d4; /* lighter */
+                --sand:#f7edd4;
+                --deep:#012a4a;
+                --glass: rgba(255,255,255,0.06);
+                --accent: #f59e0b;
+                --success: #16a34a;
+                --danger: #ef4444;
+                --card-radius: 14px;
+                color-scheme: light;
+            }
+            *{box-sizing: border-box}
+            body{
+                margin: 0; font-family: Inter; ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+                background: linear-gradient(180deg,#e0f7ff 0%, #e6fbff 35%, #fbfcff 100%);
+                min-height: 100vh; color: #033049;
+            }
+            header{
+                display: flex; gap: 20px; align-items: center; padding: 22px;
+                background: linear-gradient(90deg, rgba(6,182,212,0.08), rgba(14,116,144,0.04));
+                backdrop-filter: blur(6px);
+                border-bottom: 1px solid rgba(3, 48, 73, 0.06);
+            }
+            .brand{display: flex; gap: 14px; align-items: center}
+            .logo{
+                width: 54px; height: 54px; border-radius: 12px; background: linear-gradient(135deg,var(--sea-1),var(--sea-2));
+                display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; box-shadow: 0 6px 18px rgba(6, 182, 212, 0.16)
+            }
+            .title{font-size: 18px; font-weight: 700}
+            .subtitle{font-size: 13px; color: rgba(3, 48, 73, 0.06)}
+            main{padding: 26px; max-width: 1200px; margin: 18px auto}
+            .grid{display: grid; grid-template-columns: repeat(3,1fr);gap:18px}
+            @media (max-width:1000px){.grid{grid-template-columns: repeat(2,1fr)}}
+            @media (max-width:640px){.grid{grid-template-columns: 1fr}}
+
+            .card{background: linear-gradient(180deg, rgba(255,255,255,0.85),rgba(255,255,255,0.75));
+            border-radius:var(--card-radius); padding: 18px; box-shadow:0 6px 30px rgba(3,48,73,0.06);border:1px solid rgba(3,, 48, 73, 0.04)}
+            .card h3{margin: 0 0 8px 0;font-size: 15px}
+            .status{display: flex; gap: 8px; align-items: center}
+            .pill{padding: 6px 10px; border-radius: 999px; font-weight: 600; font-size: 13px}
+            .on{background: linear-gradient(90deg, var(--sea-2),var(--sea-1));color: #7a5539}
+
+            /* counter */
+            .counter{font-size: 44px; font-weight: 800; letter-spacing: 1px}
+            .controls{display: flex; gap: 8px; margin-top: 12px}
+            button.btn{background: var(--deep); color: white; padding: 10px 12px; border-radius: 10px; border: none; cursor: pointer}
+            button.ghost{background: transparent; border: 1px solid rgba(3, 48, 73, 0.06); padding: 8px 10px; border-radius: 10px}
+
+            /* logs */
+            .logs{height: 220px; overflow: auto; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45)); padding: 12px; border-radius: 10px; font-family: monospace; font-size: 13px}
+            .log-item{padding: 6px 0; border-bottom: 1px dashed rgba(3, 48, 73, 0.03)}
+
+            /* tickets */
+            .ticket-list{display: flex; flex-direction: column; gap: 10px}
+            .ticket{padding: 12px; border-radius: 10px; background: linear-gradient(180deg,#fff,#f8fdfd); display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(3, 48, 73, 0.04)}
+
+            /* switches */
+            .switch{width: 48px; height: 28px; border-radius: 999px; background: rgba(3, 48, 73, 0.08); display: inline-flex; padding: 4px; align-items: center; cursor: pointer}
+            .knob{width: 20px; height: 20px; border-radius: 50%; background: white; box-shadow: 0 2px 6px rgba(3, 48, 73, 0.12); transition: transform .18s}
+            .switch on{background: linear-gradient(90deg,var(--sea-2),var(--sea-1))}
+            .switch on .knob{transform: translateX(20px)}
+
+            /* little sea waves */
+            .wave{position: relative; height: 46px; overflow: hidden; border-radius: 12px}
+            .wave{position: absolute; left: 0; right: 0; bottom: 0; height: 18px; background: linear-gradient(98deg,var(--sea-2),var(--sea-1)); opacity: .12; border-radius: 50% 50% 0 0; transform: translateY(12px)}
+
+            footer{max-width: 1200px; margin: 8px auto; padding: 14px; color: rgba(3, 48, 73, 0.06);text-align: center}
+
+            .small{font-size: 13px; color: rgba(3, 48, 73, 0.06)}
+            .controls .btn.small{padding: 8px 10px}
+
+            /* modal */
+            .modal{position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.36)}
+            .modal.open{display: flex}
+            modal-card{width: 520px; background: white; padding: 18px; border-radius: 12px}
+            input, textarea, select{width: 100%; padding: 10px; border-radius: 8px; border: 1px; solid rgba(3,48,73,0.06);margin-top: 8px}
+            .row{display: flex; gap: 8px}
+            .row > *{flex: 1}
+
+            </style>
+    </head>
+    <body>
+        <header>
+            <div class="brand">
+                <div class="logo">SM</div>
+            </div>
+            <div class="title">SeaManager</div>
+            <div class="subtitle">Pannello di stato a tema mare - tutto operativo in locale</div>
+        </div>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 12px; align-items: center">
+        <div class="small">Stato server:</div>
+        <div id="serverStatus" class="pill on">Online</div>
+    </div>
+        </header>
+
+        <main>
+            <div class="grid">
+                <!-- Counter -->
+                 <div class="card" id="card-counter">
+                    <h3>Counter</h3>
+                    <div class="counter" id="counterVal" >0</div>
+                    <div class="controls">
+                        <button class="btn" id="incBtn">+1</button>
+                        <button class="ghost" id="decBtn">-1</button>
+                        <button class="ghost" id="resetBtn">Reset</button>
+                    </div>
+                    <div class="small" style="margin-top: 10px">Persistente via <strong>localStorage</strong></div>
+                 </div>
+
+                 <!-- Verifica -->
+                  <div class="card" id="card-verifica">
+                    <h3>Verifica</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between">
+                        <div class="small">Utenti verificati</div>
+                        <div class="pill on" id="verifiedCount">0</div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn" id="verifyOne">Verifica 1</button>
+                        <button class="ghost" id="revokeOne">Revoca 1</button>
+                    </div>
+                  </div>
+
+                  <!-- Benvenuto -->
+                   <div class="card" id="card-welcome">
+                    <h3>Benvenuto / Addio</h3>
+                    <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between">
+                        <div>
+                            <div class="small">Messaggio benvenuto</div>
+                            <div id="welcomeMsg" class="small">Ciao {user}, benvenuto a bordo!</div>
+                        </div>
+                        <div style="text-align: right">
+                            <div class="small">Abilitato</div>
+                            <label class="switch on" id="welcomeSwitch"><div class="knob"></div></label>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px" class="controls">
+                        <input id="nameInput" placeholder="Nome utente fittizio" />
+                        <button class="btn small"  id="sendWelcome">Simula</button>
+                    </div>
+                    <div style="margin-top: 12px">
+                        <div class="small">Messaggio addio</div>
+                        <div id="goodbyeMsg" class="small">Arrivederci {user}, a presto!</div>
+                        <div style="margin-top: 8px" class="controls">
+                            <label class="switch on" id="goodbyeSwitch"><div class="knob"></div></label>
+                            <button class="ghost" id="sendGoodbye">Simula Addio</button>
+                        </div>
+                    </div>
+                   </div>
+
+                   <!-- Annunci Video -->
+                    <div class="card" id="card-video">
+                        <h3>Annunci Video</h3>
+                        <div class="small">Crea un annuncio video che verrà nostrato nella sezione "Annunci"</div>
+                        <div style="margin-top: 10px" class="controls">
+                            <input id="videoTitle" placeholder="Titolo annuncio" />
+                            <button class="btn" id="postVideo">Pubblica</button>
+                        </div>
+                        <div style="margin-top: 12px"><strong>Ultimo annuncio:</strong> <span id="lastVideo"></span></div>
+                    </div>
+
+                    <!-- Annunci Live -->
+                     <div class="card" id="card-live">
+                        <h3>Annunci Live</h3>
+                        <div class="small">Annuncio rapido per dire che c'è una live in corso</div>
+                        <div class="controls">
+                            <input id="liveTitle" placeholder="Titolo Live" />
+                            <button class="btn" id="postLive">Annuncia Live</button>
+                        </div>
+                        <div style="margin-top: 12px"><strong>Live attiva:</strong> <span id="liveStatus">No</span></div>
+                     </div>
+
+                     <!-- Autoruoli -->
+                      <div class="card" id="card-autorole">
+                        <h3>Autoruoli</h3>
+                        <div class="small">Assegna/rimuovi ruoli automatici a membri fittizi</div>
+                        <div style="margin-top: 10px; display: flex; gap: 8px">
+                            <select id="roleSelect">
+                                <option value="Ospite">Ospite</option>
+                                <option value="Membro">Membro</option>
+                                <option value="Streamer">Streamer</option>
+                                <option value="VIP">VIP</option>
+                            </select>
+                            <input id="memberName" placeholder="Nome membro" />
+                        </div>
+                        <div class="controls" style="margin-top: 10px">
+                            <button class="btn" id="assignRole">Assegna</button>
+                            <button class="ghost" id="removeRole">RImuovi</button>
+                        </div>
+                        <div style="margin-top: 12px">
+                            <strong>Assegnazioni recenti</strong>
+                            <div id="roleList" class="small" style="margin-top: 8px">Nessuna</div>
+                        </div>
+                      </div>
+
+                      <!-- Logs -->
+                       <div class="card" id="card-logs">
+                        <h3>Logs</h3>
+                        <div class="logs" id="logBox"></div>
+                        <div style="display: flex; gap: 8px; margin-top: 10px">
+                            <button class="ghost" id="clearLogs">Pulisci</button>
+                            <button class="ghost" id="exportLogs">Esporta</button>
+                        </div>
+                       </div>
+
+                       <!-- Ticket -->
+                        <div class="card" id="card-ticket">
+                            <h3>Ticket</h3>
+                            <div class="small">Sistema di ticket semplice, crea, assegna, chiudi</div>
+                            <div class="controls" style="margin-top: 10px">
+                                <input id="ticketTitle" placeholder="Titolo ticket" />
+                                <button class="btn" id="createTicket">Nuovo</button>
+                            </div>
+                            <div style="margin-top: 12px" class="ticket-list" id="ticket-list"></div>
+                        </div>
+
+            </div>
+
+            <div class="waves" style="margin-top: 18px">
+                <div class="wave" style="width: 100%"></div>
+            </div>
+
+        </main>
+
+        <footer>
+            <div>Made with ❤️ by SeaManager - Interfaccia demo completamente client-side. Tutti i cambiamenti vengono salvati nel browser.</div>
+        </footer>
+
+        <!-- Modal per dettagli ticket -->
+         <div class="modal" id="modal">
+            <h3 id="modalTitle">Dettagli ticket</h3>
+            <div id="modalBody" style="margin-top: 8px"></div>
+            <div style="display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end">
+                <button class="ghost" id="closeModal">Chiudi</button>
+                <button class="btn" id="closeTicket">Chiudi ticket</button>
+            </div>
+         </div>
+        </div>
+
+        <script>
+            (function(){
+                // Utilities
+                const qs = s => document.querySelector(s);
+                const qsa = s => document.querySelectorAll(s);
+                const now = () => new Date().toLocaleString();
+                function log(txt){
+                    const box = qs('#logBox');
+                    const item = document.createElement('div'); item.className='log-item';
+                    item.textContent = '[${now()}] $(txt)';
+                    box.prepend(item);
+                    // keep limited
+                    while(box.children.lenght>200) box.removeChild(box.lastChild);
+                    saveState();
+                }
+
+                // State (persisted)
+                const state = {
+                    counter: Number(localStorage.getItem('sm_counter')||0),
+                    verified: Number(localStorage.getItem('sm_verified')||0),
+                    lastVideo: localStorage.getItem('sm_video')||null
+                    live: localStorage.getItem('sm_live')==='true',
+                    roles: JSON.parse(localStorage.getItem('sm_roles')||'[]'),
+                    logs: JSON.parse(localStorage.getItem('sm_logs')||'[]'),
+                    tickets: JSON.parse(localStorage.getItem('sm_tickets')||'[]'),
+                    welcomeEnabled: localStorage.getItem('sm_welcome')!=='false',
+                    goodbyeEnabled: localStorage.getItem('sm_goodbye')!=='false'
+                };
+
+                // Apply initial UI 
+                function render(){
+                    qs('#counterVai').textContent = state.counter;
+                    qs('#verifiedCount').textContent = state.verified;
+                    qs('#lastVideo').textContent = state.lastVideo || 'Nessuno';
+                    qs('#liveStatus').textContent = state.live ? 'Si' : 'No';
+                    qs('#roleList').textContent = state.roles.lenght ? state.roles.map(r=>'$(r.member) -> ${r.role}').join(', ') : 'Nessuna';
+                    // logs
+                    const box = qs('#logBox'); box.innerHTML='';
+                    (state.logs||[]).slice().reverse().forEach(1=>{
+                        const d = document.createElement('div'); d.className='log-item'; d.textContent = 1; box.appendChild(d);
+                    });
+                    // switches
+                    qs('#welcomeSwitch').classList.toggle('on', state.welcomeEnabled);
+                    qs('#goodbyeSwitch').classList.toggle('on', state.goodbyeEnabled);
+                }
+
+                function saveState() {
+                    localStorage.setItem('sm_counter', state.counter);
+                    localStorage.setItem('sm.verified', state.verified);
+                    if(state.lastVideo) localStorage.setItem('sm_video', state.lastVideo);
+                    localStorage.setItem('sm_live' state.live);
+                    localStorage.setItem('sm_roles', JSON.stringify(state.roles));
+                    localStorage.setItem('sm_logs', JSON.stringify(Array.from(qs('#logBox').children).map(n=>.textContent)));
+                    localStorage.setItem('sm_tickets' JSON.stringify(state.tickets));
+                    localStorage.setItem('sm_welcome', state.welcomeEnabled);
+                    localStorage.setItem('sm_goodbye', state.goodbyeEnabled);
+                }
+
+                // Counter handlers
+                qs.('#incBtn').addEventListener('click', ()=>{ state.counter++; render(); log('Counter incrementato: '+state.counter); });
+                qs('#decBtn').addEventListener('click', ()=>{ state.counter--; render(); log('Counter decrementato: '+state.counter); });
+                qs('#resetBtn').addEventListener('click', ()=>{ state.counter=0; render(); log('Counter resettato'); });
+
+                // Verify
+                qs('#verifyOne').addEventListener('click', ()=>{ state.verified++; render(); log('Utente verificato (+'+state.verified+')'); });
+                qs('#revokeOne').addEventListener('click', ()=>{ if(state.verified>0) { state.verified--; render(); log('Verifica revocata (now '+state.verified+')'); } });
+
+                // Welcome / Goodbye
+                qs('#welcomeSwitch').addEventListener('click' (e)=>{ state.welcomeEnabled = !state.welcomeEnabled; qs('#welcomeSwitch').classList.toggle('on', state.welcomeEnabled); log('Welcome toggled: '+state.welcomeEnabled); savestate(); });
+                qs('#goodbyeSwitch').addEventListener('click', ()=>{ state.goodbyeEnabled = !state.goodbyeEnabled; qs('#goodbyeSwitch').classList.toggle('on', state.goodbyeEnabled); log('Goodbye toggled: '+state.goodbyeEnabled); saveState(); });
+
+                qs('#sendWelcome').addEventListener('click').addEventListener('click', ()=>{
+                    const name = qs('#nameInput').value.trim() || 'NuovoUtente';
+                    if(state.welcomeEnabled) { log('Benvenuto inviato a ${name}'); alert('Messaggio inviato: ${qs('welcomeMsg').textContent.replace('{user}', name)}'); }
+                    else { alert('Messaggi di benvenuto disabilitati'); }
+                });
+                qs('#sendGoodbye').addEventListener('click', ()=>{
+                    const name = qs('#nameInput').value.trim() || 'ExUtente';
+                    if(state.goodbyeEnabled) { log('Addio inviato a ${name}'); alert('Messaggio inviato: ${qs('goodbyeMsg').textContent.replace('{user}',name)}'); }
+                    else { alert('Messaggi di addio disabilitati'); }
+                });
+
+                // Annunci video
+                qs('#postVideo').addEventListener('click', ()=>{
+                    const title = qs('#videoTitle').value.trim();
+                    if(!title) return alert('Inserisci un titolo');
+                    state.lastVideo =  title + ' = ' + now(); render(); log('Annuncio video pubblicato: '+title);
+                });
+
+                // Live
+                qs('#postLive').addEventListener('click', ()=>{
+                    const title = qs('#liveTitle').value.trim();
+                    if(!title) return alert('Inserisci titolo live');
+                    state.live = true; render(); log('Live annunciata: '+title);
+                    // auto-turn off after 5 minutes demo
+                    setTimeout(()=>{ state.live=false; render(); log('Live terminata automaticamente (demo)'); }, 1000*60*5);
+                });
+
+                // Autoruoli
+                qs('#assignRole').addEventListener('click', ()=>{
+                    const member = qs('#memberName').value.trim() || 'MembroX';
+                    const role = qs('#roleSelect').value;
+                    state.role.push({member,role,at:now()}); render(); log('Ruolo ${role} assegnato a ${member}');
+                });
+                qs('#removeRole').addEventListener('click', ()=>{
+                    const member = qs('#memberName').value.trim();
+                    if(!member) return alert('Indica il nome del membro da rimuovere');
+                    const before = state.roles.length;
+                    state.roles = state.roles.filter(r=>r.member!==member);
+                    render(); log('Rimosso ruolo da ${member} (prima ${before} -> ora ${state.roles.length})');
+                });
+
+                // Logs controls
+                qs('#clearLogs').addEventListener('click', ()=>{ qs('#logBox').innerHTML=''; log('Logs puliti'); saveState(); });
+                qs('#exportLogs').addEventListener('click', ()=>{
+                    const txt = Array.from(qs('#logBox').children).map(n=>n.textContent).join('\n');
+                    const blob = new Blob([txt],{type:'text/plain'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href=url; a.download='logs.txt'; a.click(); URL.revokeObjectURL(url);
+                    log('Logs esportati');
+                });
+
+                // Tickets
+                function renderTickets(){
+                    const list = qs('#ticketList'); list.innerHTML='';
+                    state.tickets.forEach((t,i)=>{
+                        const el = document.createElement('div'); el.className='ticket';
+                        el.innerHTML = '<div><strong>${t.title}</strong><div class="small">${t.status} - ${t.createdAt}</div></div><div style="display: flex; gap: 8px"><button class="ghost" data-idx-"${i}" oneclick="openTicket(${i})">Apri</button><button class="btn" data-idx="${i}" onclick="assignTicket(${i})">Assegna</button><div>';
+                            list.appendChild(el);
+                        });
+                    }
+
+                    window.openTicket = function(i){
+                        const t = state.tickets[i]; if(!t) return;
+                        qs('#modalTitle').textContent = 'Ticket: '+t.title;
+                        qs('#modalBody').innerHTML = '<div class=small>Creato: ${t.createdAt}</div><div style="margin-top: 8px">${t.content||'Nessuna descrizione'}</div>';
+                        qs('#modal').classList.add('open');
+                        qs('#closeTicket').onclick = function(){ state.tickets[i].status='Chiuso'; renderTickets(); qs('#modal').classList.remove('open'); log('Ticket chiuso: '+t.title); };
+                    }
+                    window.assignTicket = function(i){ state.tickets[i].assignedTo = 'StaffDemo'; state.tickets[i].status='Assegnato'; renderTickets(); log('Ticket assegnato: '+state.tickets[i].title); };
+
+                    qs('#createTicket').addEventListener('click' ()=>{
+                        const title = qs('#ticketTitle').value.trim() ||'Ticket senza titolo';
+                        const t = {title, content: 'Creato via UI',status:'Aperto',createdAt:now(),assignedTo:null};
+                        state.tickets.push(t); renderTickets(); log('Nuovo ticket: '+title); qs('#ticketTitle').value='';
+                    });
+
+                    qs('#closeModal').addEventListener('click', ()=>qs('#modal').classList.remove('open'));
+
+                    // load saved tickets
+                    state.tickets = JSON.parse(localStorage.getItem('sm_tickets')||'[]');
+
+                    // init
+                    render(); renderTickets();
+
+                    // add initial log if empty
+                    if((state.logs||[]).length==0 && qs('#logBox').children.lenght===0){ log('SeaManager avviato (demo locale)'); }
+
+                    // save before unload
+                    window.addEventListener('beforeunload', saveState);
+
+                })();
+                </script>
+    </body>
+</html>
